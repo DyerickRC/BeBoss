@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Be Boss 18k</title>
+  <link rel="icon" href="./logo.png" type="image/png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img src="./logo.png" alt="Be Boss 18k" class="login-logo" onerror="this.style.display='none'"/>
+    <h1 class="login-title">Painel Admin</h1>
+    <p class="login-sub">Be Boss 18k · Acesso Restrito</p>
+    <div class="login-error" id="loginError">Senha incorreta. Tente novamente.</div>
+    <div class="form-group">
+      <label>Senha de Administrador</label>
+      <input type="password" id="adminPasswordInput" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn-gold" id="loginSubmitBtn">Entrar</button>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="./logo.png" alt="Be Boss 18k" class="sidebar-logo" onerror="this.style.display='none'"/>
+      <span class="sidebar-brand-name">Be Boss 18k</span>
+      <span class="sidebar-brand-sub">Painel Administrativo</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Visão Geral</div>
+      <button class="nav-item active" data-page="dashboard">
+        <i class="fas fa-chart-bar"></i> Dashboard
+      </button>
+
+      <div class="nav-section-label">Loja</div>
+      <button class="nav-item" data-page="products">
+        <i class="fas fa-gem"></i> Produtos
+      </button>
+      <button class="nav-item" data-page="vitrine">
+        <i class="fas fa-store"></i> Vitrine
+      </button>
+      <button class="nav-item" data-page="orders">
+        <i class="fas fa-shopping-bag"></i> Pedidos
+      </button>
+
+      <div class="nav-section-label">Equipe</div>
+      <button class="nav-item" data-page="sellers">
+        <i class="fas fa-users"></i> Vendedores
+      </button>
+
+      <button class="nav-item" data-page="customers">
+        <i class="fas fa-users"></i> Clientes
+      </button>
+
+      <div class="nav-section-label">Configurações</div>
+      <button class="nav-item" data-page="reviews">
+        <i class="fas fa-star"></i> Avaliações
+      </button>
+      <button class="nav-item" data-page="settings">
+        <i class="fas fa-cog"></i> Configurações
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <strong>Administrador</strong>
+        Be Boss 18k
+      </div>
+      <button class="btn-logout" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <span class="topbar-title" id="topbarTitle">Dashboard</span>
+      <div class="topbar-right">
+        <span class="badge-admin">Admin</span>
+        <a href="index.html" target="_blank" class="btn btn-outline btn-sm">
+          <i class="fas fa-external-link-alt"></i> Ver Loja
+        </a>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- PAGE: DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <!-- Gráfico de faturamento -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Faturamento — Últimos 6 Meses</h3>
+            <span id="chartTotal" style="font-size:0.78rem;color:var(--text-muted)"></span>
+          </div>
+          <canvas id="revenueChart" height="100"></canvas>
+        </div>
+
+        <!-- Alertas de estoque baixo -->
+        <div id="stockAlerts" style="display:none;margin-bottom:24px"></div>
+
+        <div class="section-hd">
+          <h2>Pedidos Recentes</h2>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('orders')">Ver todos</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Pagamento</th>
+                <th>Status</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="dashOrdersTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: PRODUCTS -->
+      <section class="page" id="page-products">
+        <div class="section-hd">
+          <h2>Produtos</h2>
+          <button class="btn btn-primary" id="addProductBtn">
+            <i class="fas fa-plus"></i> Novo Produto
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Nome</th>
+                <th>Categoria</th>
+                <th>Preço</th>
+                <th>Estoque</th>
+                <th>Badge</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: ORDERS -->
+      <section class="page" id="page-orders">
+        <div class="section-hd">
+          <h2>Pedidos</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="filterOrders('all')">Todos</button>
+            <button class="btn btn-outline btn-sm" onclick="filterOrders('pendente')">Pendentes</button>
+            <button class="btn btn-outline btn-sm" onclick="filterOrders('pago')">Pagos</button>
+            <button class="btn btn-outline btn-sm" onclick="filterOrders('enviado')">Enviados</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Itens</th>
+                <th>Total</th>
+                <th>Pagamento</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: SELLERS -->
+      <section class="page" id="page-sellers">
+        <div class="section-hd">
+          <h2>Vendedores</h2>
+          <button class="btn btn-primary" id="addSellerBtn">
+            <i class="fas fa-user-plus"></i> Novo Vendedor
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Usuário</th>
+                <th>Criado em</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="sellersTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: VITRINE -->
+      <section class="page" id="page-vitrine">
+        <div class="section-hd">
+          <h2>Vitrine da Loja</h2>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span class="vitrine-counter" id="vitrineCounter"><strong>0</strong> / 16 selecionados</span>
+            <button class="btn btn-primary" onclick="saveVitrine()">
+              <i class="fas fa-save"></i> Salvar Vitrine
+            </button>
+          </div>
+        </div>
+        <p class="vitrine-intro">
+          Escolha até <strong style="color:var(--gold)">16 produtos</strong> para exibir na
+          <strong style="color:var(--text)">página inicial</strong> da loja.
+          Clique para selecionar ou remover. A ordem de seleção define a ordem de exibição.
+        </p>
+        <div class="vitrine-toolbar">
+          <input type="search" id="vitrineSearch" class="vitrine-search"
+                 placeholder="🔍 Filtrar por nome ou categoria..."
+                 oninput="renderVitrine()"/>
+          <button class="btn btn-outline btn-sm" onclick="clearVitrine()">
+            <i class="fas fa-times"></i> Limpar seleção
+          </button>
+        </div>
+        <div class="vitrine-grid" id="vitrineGrid"></div>
+      </section>
+
+      <!-- PAGE: CUSTOMERS -->
+      <section class="page" id="page-customers">
+        <div class="section-hd">
+          <h2>Clientes Cadastrados</h2>
+          <span id="customersCount" style="font-size:0.78rem;color:var(--text-muted)"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>CPF</th>
+                <th>Telefone</th>
+                <th>Pedidos</th>
+                <th>Gasto Total</th>
+                <th>Cadastro</th>
+              </tr>
+            </thead>
+            <tbody id="customersTbody"></tbody>
+          </table>
+        </div>
+        <div id="customerOrdersDetail" style="display:none;margin-top:24px"></div>
+      </section>
+
+      <!-- PAGE: REVIEWS -->
+      <section class="page" id="page-reviews">
+        <div class="section-hd">
+          <h2>Avaliações de Clientes</h2>
+          <span id="reviewsCount" style="font-size:0.78rem;color:var(--text-muted)"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Nota</th>
+                <th>Comentário</th>
+                <th>Cliente</th>
+                <th>Código</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="reviewsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: SETTINGS -->
+      <section class="page" id="page-settings">
+        <div class="section-hd"><h2>Configurações</h2></div>
+        <div style="max-width:480px;">
+          <div class="form-group" style="margin-bottom:24px;">
+            <label>Nova Senha de Administrador</label>
+            <input type="password" id="newAdminPass" placeholder="Nova senha"/>
+          </div>
+          <div class="form-group" style="margin-bottom:24px;">
+            <label>Confirmar Nova Senha</label>
+            <input type="password" id="confirmAdminPass" placeholder="Confirme a senha"/>
+          </div>
+          <button class="btn btn-primary" id="savePasswordBtn">
+            <i class="fas fa-lock"></i> Salvar Nova Senha
+          </button>
+
+          <hr style="border:none;border-top:1px solid rgba(201,168,76,0.1);margin:36px 0;"/>
+
+          <div class="section-hd" style="margin-bottom:16px;">
+            <h2 style="font-size:1.1rem;">Dados da Loja</h2>
+          </div>
+          <div class="form-group">
+            <label>WhatsApp (ex: 5534999999999)</label>
+            <input type="text" id="settingsWhatsapp" placeholder="5534999999999"/>
+          </div>
+          <div class="form-group">
+            <label>Chave PIX</label>
+            <input type="text" id="settingsPix" placeholder="CPF, e-mail ou chave aleatória"/>
+          </div>
+          <div class="form-group">
+            <label>Nome no PIX</label>
+            <input type="text" id="settingsPixName" placeholder="Be Boss 18k"/>
+          </div>
+          <div class="form-group">
+            <label>Cidade PIX</label>
+            <input type="text" id="settingsPixCity" placeholder="Uberlândia"/>
+          </div>
+          <button class="btn btn-primary" id="saveStoreBtn">
+            <i class="fas fa-save"></i> Salvar Configurações
+          </button>
+
+          <hr style="border:none;border-top:1px solid rgba(201,168,76,0.1);margin:36px 0;"/>
+
+          <div class="section-hd" style="margin-bottom:16px;">
+            <h2 style="font-size:1.1rem;">Email Automático (EmailJS)</h2>
+          </div>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">
+            Configure para enviar boas-vindas e confirmação de newsletter automaticamente.<br>
+            Crie sua conta grátis em <a href="https://www.emailjs.com" target="_blank" style="color:var(--gold)">emailjs.com</a>.
+          </p>
+          <div class="form-group">
+            <label>Public Key (Account → API Keys)</label>
+            <input type="text" id="emailjsKey" placeholder="Ex: user_XXXXXXXXXXXXXXX"/>
+          </div>
+          <div class="form-group">
+            <label>Service ID (Email Services)</label>
+            <input type="text" id="emailjsService" placeholder="Ex: service_abc123"/>
+          </div>
+          <div class="form-group">
+            <label>Template ID — Boas-vindas</label>
+            <input type="text" id="emailjsWelcome" placeholder="Ex: template_welcome"/>
+          </div>
+          <div class="form-group">
+            <label>Template ID — Newsletter</label>
+            <input type="text" id="emailjsNewsletter" placeholder="Ex: template_newsletter"/>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button class="btn btn-primary" id="saveEmailjsBtn">
+              <i class="fas fa-save"></i> Salvar Configurações de Email
+            </button>
+            <button class="btn btn-outline btn-sm" id="testEmailBtn">
+              <i class="fas fa-paper-plane"></i> Enviar Email de Teste
+            </button>
+          </div>
+          <div id="emailjsStatus" style="font-size:0.75rem;margin-top:10px;display:none"></div>
+
+          <hr style="border:none;border-top:1px solid rgba(201,168,76,0.1);margin:36px 0;"/>
+
+          <div style="margin-bottom:12px;">
+            <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream);margin-bottom:8px;">Dados do Sistema</h2>
+            <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Exportar ou limpar dados do localStorage.</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" id="exportDataBtn">
+              <i class="fas fa-download"></i> Exportar JSON
+            </button>
+            <button class="btn btn-danger btn-sm" id="clearOrdersBtn">
+              <i class="fas fa-trash"></i> Limpar Pedidos
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <h2 class="modal-title" id="productModalTitle">Novo Produto</h2>
+    <input type="hidden" id="editProductId"/>
+    <div class="form-group">
+      <label>Nome do Produto</label>
+      <input type="text" id="pName" placeholder="Ex: Corrente Veneziana Cruz"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="pCategory">
+          <option value="Correntes">Correntes</option>
+          <option value="Pulseiras">Pulseiras</option>
+          <option value="Corrente Pingente">Corrente Pingente</option>
+          <option value="Pingentes">Pingentes</option>
+          <option value="Infantil">Infantil</option>
+          <option value="Escapulários">Escapulários</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Preço (R$)</label>
+        <input type="number" id="pPrice" placeholder="0.00" min="0" step="0.01"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Descrição</label>
+      <textarea id="pDescription" placeholder="Descreva o produto..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>URL da Imagem</label>
+      <input type="url" id="pImage" placeholder="https://..."/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Estoque (vazio = ilimitado)</label>
+        <input type="number" id="pStock" placeholder="Ex: 10" min="0" step="1"/>
+      </div>
+      <div class="form-group">
+        <label>Badge (opcional)</label>
+        <input type="text" id="pBadge" placeholder="Ex: Mais Vendido"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelProductBtn">Cancelar</button>
+      <button class="btn btn-primary" id="saveProductBtn">Salvar Produto</button>
+    </div>
+  </div>
+</div>
+
+<!-- Seller Modal -->
+<div class="modal-overlay" id="sellerModal">
+  <div class="modal">
+    <h2 class="modal-title" id="sellerModalTitle">Novo Vendedor</h2>
+    <input type="hidden" id="editSellerId"/>
+    <div class="form-group">
+      <label>Nome Completo</label>
+      <input type="text" id="sName" placeholder="Ex: João Silva"/>
+    </div>
+    <div class="form-group">
+      <label>Usuário (login)</label>
+      <input type="text" id="sUsername" placeholder="Ex: joao"/>
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="sPassword" placeholder="Mínimo 4 caracteres"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="cancelSellerBtn">Cancelar</button>
+      <button class="btn btn-primary" id="saveSellerBtn">Salvar Vendedor</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal" style="max-width:620px;">
+    <h2 class="modal-title">Detalhes do Pedido</h2>
+    <div id="orderDetailContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="closeOrderModalBtn">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:380px;">
+    <h2 class="modal-title" id="confirmTitle">Confirmar</h2>
+    <p id="confirmMsg" style="color:var(--text-muted);font-size:0.875rem;margin-bottom:8px;"></p>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="confirmCancelBtn">Cancelar</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="adminToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

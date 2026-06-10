@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendedor — Be Boss 18k</title>
+  <link rel="icon" href="./logo.png" type="image/png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="vendedor.css"/>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img src="./logo.png" alt="Be Boss 18k" class="login-logo" onerror="this.style.display='none'"/>
+    <h1 class="login-title">Área do Vendedor</h1>
+    <p class="login-sub">Be Boss 18k · Acesso da Equipe</p>
+    <div class="login-error" id="loginError">Usuário ou senha incorretos.</div>
+    <div class="form-group">
+      <label>Usuário</label>
+      <input type="text" id="usernameInput" placeholder="seu usuário" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="passwordInput" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn-gold" id="loginBtn">Entrar</button>
+    <p style="margin-top:20px;font-size:0.72rem;color:var(--text-muted);">
+      Conta criada pelo administrador da loja.
+    </p>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="./logo.png" alt="Be Boss 18k" class="sidebar-logo" onerror="this.style.display='none'"/>
+      <span class="sidebar-brand-name">Be Boss 18k</span>
+      <span class="sidebar-brand-sub">Área do Vendedor</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Visão Geral</div>
+      <button class="nav-item active" data-page="overview">
+        <i class="fas fa-chart-bar"></i> Resumo
+      </button>
+      <div class="nav-section-label">Pedidos</div>
+      <button class="nav-item" data-page="pending">
+        <i class="fas fa-clock"></i> Pendentes
+        <span class="notif-dot" id="pendingDot" style="display:none;"></span>
+      </button>
+      <button class="nav-item" data-page="all-orders">
+        <i class="fas fa-shopping-bag"></i> Todos os Pedidos
+      </button>
+      <div class="nav-section-label">Catálogo</div>
+      <button class="nav-item" data-page="stock">
+        <i class="fas fa-boxes"></i> Estoque
+      </button>
+      <button class="nav-item" data-page="reviews">
+        <i class="fas fa-star"></i> Avaliações
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <strong id="sellerNameDisplay">—</strong>
+        Vendedor
+      </div>
+      <button class="btn-logout" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <span class="topbar-title" id="topbarTitle">Resumo</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="badge-seller">Vendedor</span>
+        <a href="index.html" target="_blank" class="btn btn-outline btn-sm">
+          <i class="fas fa-external-link-alt"></i> Ver Loja
+        </a>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- PAGE: OVERVIEW -->
+      <section class="page active" id="page-overview">
+        <div class="stats-grid" id="overviewStats"></div>
+        <div class="section-hd">
+          <h2>Pedidos Recentes</h2>
+          <button class="btn btn-outline btn-sm" onclick="navigateTo('all-orders')">Ver todos</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Cliente</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Data</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="overviewTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: PENDING -->
+      <section class="page" id="page-pending">
+        <div class="section-hd"><h2>Pedidos Pendentes</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Cliente</th><th>Contato</th><th>Total</th><th>Pagamento</th><th>Data</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="pendingTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: STOCK -->
+      <section class="page" id="page-stock">
+        <div class="section-hd"><h2>Controle de Estoque</h2></div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:20px;">
+          Atualize a quantidade disponível de cada produto. <strong style="color:var(--text)">0</strong> = esgotado. Vazio = ilimitado.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Produto</th>
+                <th>Categoria</th>
+                <th>Preço</th>
+                <th>Estoque Atual</th>
+                <th>Atualizar</th>
+              </tr>
+            </thead>
+            <tbody id="stockTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: ALL ORDERS -->
+      <section class="page" id="page-all-orders">
+        <div class="section-hd">
+          <h2>Todos os Pedidos</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-outline btn-sm" onclick="filterAll('all')">Todos</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAll('pendente')">Pendentes</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAll('pago')">Pagos</button>
+            <button class="btn btn-outline btn-sm" onclick="filterAll('enviado')">Enviados</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Pagamento</th><th>Status</th><th>Data</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="allOrdersTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PAGE: REVIEWS -->
+      <section class="page" id="page-reviews">
+        <div class="section-hd">
+          <h2>Avaliações de Clientes</h2>
+          <span id="reviewsCount" style="font-size:0.78rem;color:var(--text-muted)"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Nota</th>
+                <th>Comentário</th>
+                <th>Cliente</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="reviewsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal">
+    <h2 class="modal-title">Detalhes do Pedido</h2>
+    <div id="orderDetailContent"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="closeOrderBtn">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="vendToast"></div>
+
+<script src="vendedor.js"></script>
+</body>
+</html>
