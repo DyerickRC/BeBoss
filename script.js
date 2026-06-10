@@ -1202,7 +1202,8 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
   }
 
   function openBoletoPopup(addr) {
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    _lastCart = [...cart];
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0) + _shippingCost;
     const linhaDigitavel = generateLinhaDigitavel(subtotal);
     const dueDate = new Date(); dueDate.setDate(dueDate.getDate() + 3);
     const dueFmt = dueDate.toLocaleDateString('pt-BR');
@@ -1265,7 +1266,8 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
   }
 
   function openCartaoPopup(addr) {
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    _lastCart = [...cart];
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0) + _shippingCost;
 
     // Reset form
     const form = qs('#cartaoForm');
@@ -1628,7 +1630,7 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
      WHATSAPP ORDER
   ===================================================== */
   function openWhatsAppOrder(addr, payment) {
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0) + _shippingCost;
     const items = cart.map(i => `  • ${i.name} (x${i.qty}) — ${formatBRL(i.price * i.qty)}`).join('\n');
     const paymentLabel = { pix: 'PIX', credito: 'Cartão de Crédito', boleto: 'Boleto Bancário' }[payment] || payment;
 
