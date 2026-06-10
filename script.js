@@ -1394,7 +1394,10 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
     cartaoOverlay?.classList.remove('active');
     document.body.style.overflow = '';
   }
-  window.closeCartaoPopup = closeCartaoPopup;
+  window.closeCartaoPopup    = closeCartaoPopup;
+  window.openWhatsAppOrder   = openWhatsAppOrder;
+  window.updateUserDisplay   = updateUserDisplay;
+  window.showToast           = showToast;
 
   qs('#fecharCartao')?.addEventListener('click', closeCartaoPopup);
   cartaoOverlay?.addEventListener('click', closeCartaoPopup);

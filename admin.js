@@ -41,7 +41,7 @@ function toast(msg) {
 
 /* --- CONFIRM DIALOG --- */
 let _confirmResolve = null;
-function confirm(title, msg) {
+function showConfirmDialog(title, msg) {
   $('confirmTitle').textContent = title;
   $('confirmMsg').textContent   = msg;
   $('confirmModal').classList.add('open');
@@ -568,7 +568,7 @@ function editProduct(id) { openProductModal(id); }
 window.editProduct = editProduct;
 
 async function deleteProduct(id) {
-  const ok = await confirm('Excluir produto', 'Tem certeza? Esta ação não pode ser desfeita.');
+  const ok = await showConfirmDialog('Excluir produto', 'Tem certeza? Esta ação não pode ser desfeita.');
   if (!ok) return;
   let prods = load(KEY_PRODUCTS, []).filter(p => p.id !== id);
   save(KEY_PRODUCTS, prods);
@@ -782,7 +782,7 @@ function toggleSeller(id) {
 window.toggleSeller = toggleSeller;
 
 async function deleteSeller(id) {
-  if (!await confirm('Excluir vendedor', 'Esta conta será removida permanentemente.')) return;
+  if (!await showConfirmDialog('Excluir vendedor', 'Esta conta será removida permanentemente.')) return;
   save(KEY_SELLERS, load(KEY_SELLERS, []).filter(s => s.id !== id));
   renderSellers();
   toast('Vendedor removido.');
@@ -875,7 +875,7 @@ $('exportDataBtn').onclick = () => {
 };
 
 $('clearOrdersBtn').onclick = async () => {
-  if (!await confirm('Limpar pedidos', 'Todos os pedidos serão excluídos. Exporte antes se precisar.')) return;
+  if (!await showConfirmDialog('Limpar pedidos', 'Todos os pedidos serão excluídos. Exporte antes se precisar.')) return;
   save(KEY_ORDERS, []);
   renderOrders('all');
   renderDashboard();
