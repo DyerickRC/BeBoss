@@ -1006,6 +1006,9 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
   const enderecoOverlay = qs('#enderecoPopupOverlay');
 
   function openEnderecoPopup() {
+    _shippingCost = 0;
+    const shipEl = qs('#shippingEstimate');
+    if (shipEl) shipEl.style.display = 'none';
     // Pré-preenche com dados do usuário logado na sessão
     try {
       const sess = JSON.parse(sessionStorage.getItem('beboss_session') || '{}');
@@ -1236,6 +1239,9 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
     boletoPopup?.classList.remove('active');
     boletoOverlay?.classList.remove('active');
     document.body.style.overflow = '';
+    cart = [];
+    saveCart();
+    updateCartUI();
   }
 
   qs('#fecharBoleto')?.addEventListener('click', () => { closeBoletoPopup(); });
@@ -1633,8 +1639,9 @@ window.addEventListener('load', () => window.scrollTo(0, 0));
      WHATSAPP ORDER
   ===================================================== */
   function openWhatsAppOrder(addr, payment) {
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0) + _shippingCost;
-    const items = cart.map(i => `  • ${i.name} (x${i.qty}) — ${formatBRL(i.price * i.qty)}`).join('\n');
+    const source  = cart.length ? cart : _lastCart;
+    const subtotal = source.reduce((s, i) => s + i.price * i.qty, 0) + _shippingCost;
+    const items = source.map(i => `  • ${i.name} (x${i.qty}) — ${formatBRL(i.price * i.qty)}`).join('\n');
     const paymentLabel = { pix: 'PIX', credito: 'Cartão de Crédito', boleto: 'Boleto Bancário' }[payment] || payment;
 
     const msg = `*Novo Pedido — Be Boss 18k* ✦\n\n` +
